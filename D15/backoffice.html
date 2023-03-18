@@ -9,6 +9,10 @@
         integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
 
     <style>
+        html{
+            background-color: #cff4fc;
+        }
+
         .form-text {
             display: none;
         }
@@ -28,13 +32,13 @@
             display: block;
         }
     </style>
-    </style>
+    
 </head>
 <body>
     <div class="container-fluid m-0 p-0 bg-info-subtle">
         <nav class="navbar navbar-expand-lg" style="background-color: #3295db;">
             <div class="container-fluid px-5">
-                <a class="navbar-brand text-warning fs-5 d-flex align-items-center" href="#"><img class="img-fluid bg-warning rounded-5 me-3" src="assets/imgs/Konachan.com-252082sample.jpg" width="85px" alt=""> <span class="px-3 fs-3 text-dark badge text-bg-info rounded-3 fw-bold">Hatsune Miku OFFICIAL </span> </a>
+                <a class="navbar-brand text-warning fs-5 d-flex align-items-center" href="./index.html"><img class="img-fluid bg-warning rounded-5 me-3" src="assets/imgs/Konachan.com-252082sample.jpg" width="85px" alt=""> <span class="px-3 fs-3 text-dark badge text-bg-info rounded-3 fw-bold">Hatsune Miku OFFICIAL </span> </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
                     aria-label="Toggle navigation">
@@ -98,7 +102,7 @@
                         <button type="button" class="btn btn-outline-secondary">Cancel</button>
                         <button type="submit" class="btn btn-primary me-auto" onclick="handleValidate()">Submit</button>
                         <button id="delete-btn" type="button" class="btn btn-danger d-none"
-                            onclick="handleDelete()">Delete</button>
+                            onclick="deleteBtn()">Delete</button>
                     </div>
                 </form>
             </div>
@@ -111,17 +115,19 @@
         integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
         crossorigin="anonymous"></script>
     <script>
+
+        const BASE_URL = "https://striveschool-api.herokuapp.com/api/product/"
+        const BASE_OPT = {
+                headers: {
+                    "Content-Type": 'application/json; charset=utf-8',
+                    Authorization: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDE0M2EwY2Y4MWI0MjAwMTM5YjI4MzQiLCJpYXQiOjE2NzkxNDIyNTIsImV4cCI6MTY4MDM1MTg1Mn0.eE7kuHqtTEj_9HE6b2xRlTrjGwyWFsmM99rQ-sXotx8"
+                }
+            }        
         const urlParams = new URLSearchParams(window.location.search)
         const selectedId = urlParams.get("_id")
-        const endpoint = selectedId ? "https://striveschool-api.herokuapp.com/api/product/" + selectedId : "https://striveschool-api.herokuapp.com/api/product/"
+        const endpoint = selectedId ? BASE_URL + selectedId : BASE_URL
         const method = selectedId ? "PUT" : "POST"
-        const fetchOpt  = 
-                {headers: {
-                "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDE0M2EwY2Y4MWI0MjAwMTM5YjI4MzQiLCJpYXQiOjE2NzkwNDcxODAsImV4cCI6MTY4MDI1Njc4MH0.DEYGId0ZJ4-Z028r1Wi_VSuARGI-hnmlMy3hPD3-CrM"
-                }}
-        const auth_key = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDE0M2EwY2Y4MWI0MjAwMTM5YjI4MzQiLCJpYXQiOjE2NzkwNDcxODAsImV4cCI6MTY4MDI1Njc4MH0.DEYGId0ZJ4-Z028r1Wi_VSuARGI-hnmlMy3hPD3-CrM"     
 
-        
 
         const handleValidate = () => {
         const form = document.querySelector("form")
@@ -129,107 +135,111 @@
         }
 
         window.onload = async () => {
-            const resp = await fetch("https://striveschool-api.herokuapp.com/api/product/", fetchOpt)
-            const productz = await resp.json()
-            const { brand, description, imageUrl, name, price, _id } = productz;
-            if (endpoint + selectedId) {
-                
-                try {
-                    
-                    if(productz){
-                    const { brand, description, imageUrl, name, price, _id } = productz;
-                    document.getElementById("subtitle").innerText = " — Edit Concert"
-                    document.getElementById("delete-btn").classList.remove("d-none")
-                    const resp = await fetch(endpoint,fetchOpt) 
-                    const concertData = await resp.json()
-                }
-                    const { brand, description, imageUrl, name, price, _id } = card;
 
-                    
+            if (selectedId) {
+                try {
+                    const dataGet = await fetch(endpoint, BASE_OPT)
+                    const productz = await dataGet.json()
+                    const { brand, description, imageUrl, name, price, _id } = productz;
                     document.getElementById("name").value = name
                     document.getElementById("description").value = description
                     document.getElementById("price").value = price
                     document.getElementById("brand").value = brand
                     document.getElementById("imageUrl").value = imageUrl
 
-                    
-
                 } catch (error) {
-                    console.log(error)
+                    
                 }
-            }
 
+                
+
+                document.getElementById("subtitle").innerText = " — Edit your Event Concert"
+                document.getElementById("delete-btn").classList.remove("d-none")
+
+                
+
+
+
+                    const sbmtBtn = document.querySelector("button[type='submit']")
+                        sbmtBtn.classList.remove("btn-primary")
+                        sbmtBtn.classList.add("btn-success")
+                        sbmtBtn.innerText = "Modifica"
+                        
+  
+
+            }
         }
+        
 
         const startSubmit = async (event) => {
             event.preventDefault();
 
-            
+            if (event.target.checkValidity()) {
+                console.log('valid');
+            }
             const newConcert = {
                 name: document.getElementById("name").value,
                 description: document.getElementById("description").value,
                 price: document.getElementById("price").value,
                 brand: document.getElementById("brand").value,
-                imageUrl: document.getElementById("imageUrl").value,
+                imageUrl: document.getElementById("imageUrl").value
             }
 
-            console.log("HERE ON SUBMIT", newConcert)
+            
+           const payload = JSON.stringify(newConcert)
+
 
             try {
-                const resp = await fetch(endpoint, {
-                    method: "POST",
-                    body: JSON.stringify(newConcert),
-                    headers: {
-                        
-                        "Content-Type": "application/json",
-                        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDE0M2EwY2Y4MWI0MjAwMTM5YjI4MzQiLCJpYXQiOjE2NzkwNDcxODAsImV4cCI6MTY4MDI1Njc4MH0.DEYGId0ZJ4-Z028r1Wi_VSuARGI-hnmlMy3hPD3-CrM"
-                    }
-                })
+                const opt = Object.assign({}, BASE_OPT);
+                opt.method = method
+                opt.body = payload
 
-                if (resp.ok) {
-                    const modContent = await resp.json()
+                console.log(opt);
+                const data = await fetch(endpoint, opt )
+                const resp = await data.json()
 
 
-                    if (selectedId) {
-                        alert("Source with id " + modContent._id + ", edited with success")
+
+                console.log("RESP", resp)
+
+                
+                    if (method === 'PUT') {
+                        alert("Source with id " + resp._id + ", edited with success")
                     } else {
-                        alert("Source with id " + modContent._id + ", created with success")
-                    }
-                } else {
-                    throw new Error("Request bad end...")
-                }
+                        alert("Source with id " + resp._id + ", created with success")
+                    } 
 
             } catch (error) {
                 alert(error)
             }
         }
 
-        const handleDelete = async () => {
 
-            // chiediamo conferma all'utente
+        
+
+
+        
+
+        const deleteBtn = async () => {
+
             const hasAccepted = confirm("Sei convinto di voler elimilare l'appuntamento?")
 
-            // se accetta procediamo all'effettiva rimozione
             if (hasAccepted) {
 
-                const fetchOptDel = { 
-                    method: "DELETE",
-                    headers: {   "Authorization":   auth_key  }
-                }
+
 
                 try {
                     console.log("DELETE")
+                    const opt = Object.assign({}, BASE_OPT);
+                    opt.method = "DELETE"
 
-                    // ricorda: basta una fetch con l'endpoint e il metodo corretti per rimuovere già qualcosa, l'await in questo caso non è obbligatorio
-                    // ma se ci serve un qualche dato di ritorno allora lo useremo per aspettare la resp e per ricavarne il body
-                    const resp = await fetch(endpoint + selectedId, fetchOptDel,)
-                    const deletedObj = await resp.json()
+                    const deletedResp = await fetch(endpoint, opt);
+                    const deletedData = await deletedResp.json()
 
-                    alert("Hai eliminato l'appuntamento " + deletedObj.name)
-                    // se non usassimo un alert qui servirebbe ritardare l'esecuzione del metodo assign di window, 
-                    // ma siccome alert è "bloccante" in questo specifico caso non occorre
-                    window.location.assign("./index.html")
-
+                    if (deletedResp.ok){
+                         alert("Hai eliminato l'appuntamento " + deletedData.name)
+                         window.location.assign("./index.html")
+                    }
                 } catch (error) {
                     console.log(error)
                 }
